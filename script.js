@@ -1,11 +1,13 @@
-// NotesNest - AI Study Assistant
-// Modern JavaScript implementation with built-in API key and theme support
+// NotesNest - AI Study Assistant with OCR functionality
+// Modern JavaScript implementation with built-in API key, theme support, and image text extraction
 
 class StudyMateApp {
     constructor() {
         this.currentTopic = '';
         this.activeTab = 'notes';
         this.isDarkMode = false;
+        this.currentFile = null;
+        this.extractedText = '';
         
         // API Configuration - Built-in API key
         this.apiKey = 'AIzaSyANNPi-4NIf32dtFmQC1cg_HoOArebKOFg';
@@ -19,7 +21,27 @@ class StudyMateApp {
             tabButtons: document.querySelectorAll('.tab-btn'),
             suggestionButtons: document.querySelectorAll('.suggestion-btn'),
             themeToggle: document.getElementById('themeToggle'),
-            themeIcon: document.getElementById('themeIcon')
+            themeIcon: document.getElementById('themeIcon'),
+            // File upload elements
+            uploadBtn: document.getElementById('uploadBtn'),
+            fileInput: document.getElementById('fileInput'),
+            filePreview: document.getElementById('filePreview'),
+            fileName: document.getElementById('fileName'),
+            fileSize: document.getElementById('fileSize'),
+            fileIcon: document.getElementById('fileIcon'),
+            removeFile: document.getElementById('removeFile'),
+            imagePreview: document.getElementById('imagePreview'),
+            previewImage: document.getElementById('previewImage'),
+            // OCR elements
+            ocrStatus: document.getElementById('ocrStatus'),
+            ocrText: document.getElementById('ocrText'),
+            ocrProgressFill: document.getElementById('ocrProgressFill'),
+            ocrProgressPercent: document.getElementById('ocrProgressPercent'),
+            // Voice elements
+            micBtn: document.getElementById('micBtn'),
+            micIcon: document.getElementById('micIcon'),
+            voiceStatus: document.getElementById('voiceStatus'),
+            stopVoice: document.getElementById('stopVoice')
         };
         
         this.init();
@@ -28,6 +50,7 @@ class StudyMateApp {
     init() {
         this.attachEventListeners();
         this.initializeTheme();
+        this.initializeVoiceRecognition();
     }
     
     initializeTheme() {
@@ -57,6 +80,61 @@ class StudyMateApp {
         this.showNotification(`Switched to ${newTheme} mode`, 'info');
     }
     
+    initializeVoiceRecognition() {
+        // Voice Recognition (Web Speech API)
+        if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
+            const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+            this.recognition = new SpeechRecognition();
+            this.recognition.lang = "en-US";
+            this.recognition.continuous = false;
+            this.recognition.interimResults = false;
+
+            this.recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                this.elements.topicInput.value = transcript;
+                this.stopVoiceRecognition();
+                this.showNotification('Voice input captured successfully!', 'success');
+            };
+
+            this.recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                this.stopVoiceRecognition();
+                this.showNotification('Voice recognition failed. Please try again.', 'error');
+            };
+
+            this.recognition.onend = () => {
+                this.stopVoiceRecognition();
+            };
+        } else {
+            this.elements.micBtn.disabled = true;
+            this.elements.micBtn.title = "Voice recognition not supported in this browser";
+            console.log("Voice recognition not supported in this browser.");
+        }
+    }
+    
+    startVoiceRecognition() {
+        try {
+            this.recognition.start();
+            this.elements.voiceStatus.style.display = "flex";
+            this.elements.micIcon.classList.remove("fa-microphone");
+            this.elements.micIcon.classList.add("fa-microphone-slash");
+            this.elements.micBtn.classList.add("recording");
+        } catch (error) {
+            console.error('Error starting voice recognition:', error);
+            this.showNotification('Failed to start voice recognition', 'error');
+        }
+    }
+    
+    stopVoiceRecognition() {
+        if (this.recognition) {
+            this.recognition.stop();
+        }
+        this.elements.voiceStatus.style.display = "none";
+        this.elements.micIcon.classList.remove("fa-microphone-slash");
+        this.elements.micIcon.classList.add("fa-microphone");
+        this.elements.micBtn.classList.remove("recording");
+    }
+    
     attachEventListeners() {
         // Search functionality
         this.elements.searchBtn.addEventListener('click', () => this.handleSearch());
@@ -79,21 +157,160 @@ class StudyMateApp {
         
         // Theme toggle
         this.elements.themeToggle.addEventListener('click', () => this.toggleTheme());
+        
+        // File upload functionality
+        this.elements.uploadBtn.addEventListener('click', () => {
+            this.elements.fileInput.click();
+        });
+        
+        this.elements.fileInput.addEventListener('change', (e) => {
+            this.handleFileUpload(e.target.files[0]);
+        });
+        
+        this.elements.removeFile.addEventListener('click', () => {
+            this.removeFile();
+        });
+        
+        // Voice recognition
+        this.elements.micBtn.addEventListener('click', () => {
+            if (this.elements.micBtn.classList.contains('recording')) {
+                this.stopVoiceRecognition();
+            } else {
+                this.startVoiceRecognition();
+            }
+        });
+        
+        this.elements.stopVoice.addEventListener('click', () => {
+            this.stopVoiceRecognition();
+        });
+    }
+    
+    async handleFileUpload(file) {
+        if (!file) return;
+        
+        this.currentFile = file;
+        this.extractedText = '';
+        
+        // Display file info
+        this.elements.fileName.textContent = file.name;
+        this.elements.fileSize.textContent = (file.size / 1024).toFixed(2) + " KB";
+        
+        // Set appropriate file icon
+        const isImage = file.type.startsWith('image/');
+        const isPDF = file.type === 'application/pdf';
+        const isDocument = file.type.includes('document') || file.type.includes('text');
+        
+        if (isImage) {
+            this.elements.fileIcon.className = 'fas fa-image file-icon';
+            this.showImagePreview(file);
+        } else if (isPDF) {
+            this.elements.fileIcon.className = 'fas fa-file-pdf file-icon';
+        } else if (isDocument) {
+            this.elements.fileIcon.className = 'fas fa-file-alt file-icon';
+        } else {
+            this.elements.fileIcon.className = 'fas fa-file file-icon';
+        }
+        
+        this.elements.filePreview.style.display = "flex";
+        
+        // Process image with OCR if it's an image file
+        if (isImage) {
+            await this.processImageWithOCR(file);
+        } else {
+            this.showNotification('File uploaded. Note: OCR is only available for images.', 'info');
+        }
+    }
+    
+    showImagePreview(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            this.elements.previewImage.src = e.target.result;
+            this.elements.imagePreview.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+    }
+    
+    async processImageWithOCR(file) {
+        try {
+            // Show OCR processing status
+            this.elements.ocrStatus.style.display = "block";
+            this.elements.ocrText.textContent = "Initializing OCR engine...";
+            this.updateOCRProgress(0);
+            
+            // Create Tesseract worker
+            const worker = await Tesseract.createWorker('eng', 1, {
+                logger: m => {
+                    if (m.status === 'recognizing text') {
+                        const progress = Math.round(m.progress * 100);
+                        this.updateOCRProgress(progress);
+                        this.elements.ocrText.textContent = `Extracting text... ${progress}%`;
+                    }
+                }
+            });
+            
+            this.elements.ocrText.textContent = "Processing image...";
+            
+            // Perform OCR
+            const { data: { text } } = await worker.recognize(file);
+            
+            // Clean up worker
+            await worker.terminate();
+            
+            // Store extracted text
+            this.extractedText = text.trim();
+            
+            // Hide OCR status
+            this.elements.ocrStatus.style.display = "none";
+            
+            if (this.extractedText) {
+                // Show extracted text in input field
+                const currentInput = this.elements.topicInput.value.trim();
+                const newText = currentInput ? `${currentInput} ${this.extractedText}` : this.extractedText;
+                this.elements.topicInput.value = newText;
+                
+                this.showNotification(`Text extracted successfully! Found ${this.extractedText.length} characters.`, 'success');
+            } else {
+                this.showNotification('No text found in the image. Please try with a clearer image.', 'warning');
+            }
+            
+        } catch (error) {
+            console.error('OCR Error:', error);
+            this.elements.ocrStatus.style.display = "none";
+            this.showNotification('Failed to extract text from image. Please try again.', 'error');
+        }
+    }
+    
+    updateOCRProgress(progress) {
+        this.elements.ocrProgressFill.style.width = `${progress}%`;
+        this.elements.ocrProgressPercent.textContent = `${progress}%`;
+    }
+    
+    removeFile() {
+        this.currentFile = null;
+        this.extractedText = '';
+        this.elements.fileInput.value = "";
+        this.elements.filePreview.style.display = "none";
+        this.elements.imagePreview.style.display = "none";
+        this.elements.ocrStatus.style.display = "none";
+        this.showNotification('File removed', 'info');
     }
     
     async handleSearch() {
         const topic = this.elements.topicInput.value.trim();
         
-        if (!topic) {
-            this.showNotification('Please enter a topic to study!', 'warning');
+        if (!topic && !this.extractedText) {
+            this.showNotification('Please enter a topic, use voice input, or upload an image with text!', 'warning');
             return;
         }
         
-        this.currentTopic = topic;
+        // Combine manual input with extracted text
+        const combinedTopic = topic || this.extractedText;
+        
+        this.currentTopic = combinedTopic;
         this.showResults();
         
         // Generate content for the active tab
-        await this.generateContent(this.activeTab, topic);
+        await this.generateContent(this.activeTab, combinedTopic);
     }
     
     showResults() {
@@ -128,8 +345,18 @@ class StudyMateApp {
         this.showLoading(loadingElement);
         contentElement.innerHTML = '';
         
+        // Disable search button during generation
+        this.elements.searchBtn.disabled = true;
+        this.elements.searchBtn.innerHTML = '<span class="btn-text">Generating...</span><i class="fas fa-spinner fa-spin"></i>';
+        
         try {
             let prompt = this.getPromptForTab(tabName, topic);
+            
+            // Add context if text was extracted from image
+            if (this.extractedText) {
+                prompt += `\n\nNote: The following text was extracted from an uploaded image and should be considered as the primary study material:\n"${this.extractedText}"`;
+            }
+            
             const content = await this.makeApiRequest(prompt);
             
             // Hide loading and show content
@@ -140,6 +367,10 @@ class StudyMateApp {
             console.error(`Error generating ${tabName}:`, error);
             this.hideLoading(loadingElement);
             contentElement.innerHTML = this.getErrorMessage(error.message);
+        } finally {
+            // Re-enable search button
+            this.elements.searchBtn.disabled = false;
+            this.elements.searchBtn.innerHTML = '<span class="btn-text">Generate Study Materials</span><i class="fas fa-magic"></i>';
         }
     }
     
@@ -149,7 +380,7 @@ class StudyMateApp {
 
 Please include:
 1. Brief overview and key concepts
-2. Important formulas (if applicable)
+2. Important formulas (if applicable) 
 3. Key definitions and terminology
 4. Important points to remember
 5. Common applications or examples
@@ -217,7 +448,7 @@ Make it detailed, practical, and helpful for exam preparation. Use clear heading
                     threshold: "BLOCK_MEDIUM_AND_ABOVE"
                 },
                 {
-                    category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                    category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", 
                     threshold: "BLOCK_MEDIUM_AND_ABOVE"
                 },
                 {
@@ -346,7 +577,7 @@ Make it detailed, practical, and helpful for exam preparation. Use clear heading
         notification.className = `notification notification-${type}`;
         notification.innerHTML = `
             <div class="notification-content">
-                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : type === 'error' ? 'times-circle' : 'info-circle'}"></i>
                 <span>${message}</span>
             </div>
         `;
@@ -358,7 +589,7 @@ Make it detailed, practical, and helpful for exam preparation. Use clear heading
             notification.classList.add('show');
         }, 100);
         
-        // Remove after 3 seconds
+        // Remove after 4 seconds
         setTimeout(() => {
             notification.classList.remove('show');
             setTimeout(() => {
@@ -366,7 +597,7 @@ Make it detailed, practical, and helpful for exam preparation. Use clear heading
                     document.body.removeChild(notification);
                 }
             }, 300);
-        }, 3000);
+        }, 4000);
     }
 }
 

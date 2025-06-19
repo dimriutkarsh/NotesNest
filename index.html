@@ -7,12 +7,14 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tesseract.js for OCR functionality -->
+    <script src="https://unpkg.com/tesseract.js@5.0.4/dist/tesseract.min.js"></script>
 </head>
 <body>
     <!-- Top Marquee -->
     <div class="marquee-top">
         <div class="marquee-content">
-            Created By Utkarsh Dimri • Powered by Advanced AI Technology • Voice Recognition Enabled • Image Processing Capable • Dark Mode Support • Real-time Study Materials • Interactive Learning
+            Created By Utkarsh Dimri • Powered by Advanced AI Technology • Voice Recognition Enabled • Image Processing & OCR Capable • Dark Mode Support • Real-time Study Materials • Interactive Learning
         </div>
     </div>
 
@@ -21,13 +23,15 @@
         <header class="header">
             <div class="header-content">
                 <div class="logo">
-                    <div class="logo-circle"><img src="wellnest_logo2-removebg-preview.png" alt=""></div>
+                    <div class="logo-circle">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
                     <h1><span class="notes-text">Notes</span><span class="nest-text">Nest</span></h1>
                     <button class="theme-toggle" id="themeToggle">
                         <i class="fas fa-sun" id="themeIcon"></i>
                     </button>
                 </div>
-                <p class="subtitle">Your AI-powered study companion for instant learning materials</p>
+                <p class="subtitle">Your AI-powered study companion for instant learning materials with OCR support</p>
             </div>
         </header>
 
@@ -37,13 +41,72 @@
                 <div class="search-container">
                     <div class="search-input-wrapper">
                         <i class="fas fa-search search-icon"></i>
+                        
                         <input 
                             type="text" 
                             id="topicInput" 
-                            placeholder="Enter your study topic (e.g., Quadratic Equations, Newton's Laws, Photosynthesis...)"
+                            placeholder="Enter your study topic, use voice, or upload a document/image..."
                             class="search-input"
                         />
+                        
+                        <!-- Input Actions -->
+                        <div class="input-actions">
+                            <!-- Microphone Button -->
+                            <button class="action-btn" id="micBtn" title="Voice Input">
+                                <i class="fas fa-microphone" id="micIcon"></i>
+                            </button>
+                            
+                            <!-- File Upload Button -->
+                            <button class="action-btn" id="uploadBtn" title="Upload Document/Image">
+                                <i class="fas fa-upload"></i>
+                            </button>
+                            
+                            <!-- Hidden File Input -->
+                            <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.txt,.jpg,.png,.jpeg,.webp,.bmp,.tiff" hidden>
+                        </div>
                     </div>
+
+                    <!-- File Preview -->
+                    <div class="file-preview" id="filePreview" style="display: none;">
+                        <div class="file-info">
+                            <i class="fas fa-file-alt file-icon" id="fileIcon"></i>
+                            <div class="file-details">
+                                <span class="file-name" id="fileName"></span>
+                                <span class="file-size" id="fileSize"></span>
+                            </div>
+                            <button class="remove-file" id="removeFile" title="Remove file">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <!-- Image Preview -->
+                        <div class="image-preview" id="imagePreview" style="display: none;">
+                            <img id="previewImage" alt="Preview" style="max-width: 100%; max-height: 200px; border-radius: 8px; margin-top: 10px;">
+                        </div>
+                    </div>
+
+                    <!-- OCR Processing Status -->
+                    <div class="ocr-status" id="ocrStatus" style="display: none;">
+                        <div class="ocr-progress">
+                            <div class="ocr-spinner"></div>
+                            <div class="ocr-progress-bar">
+                                <div class="ocr-progress-fill" id="ocrProgressFill"></div>
+                            </div>
+                        </div>
+                        <span class="ocr-text" id="ocrText">Processing image... Extracting text...</span>
+                        <div class="ocr-progress-percent" id="ocrProgressPercent">0%</div>
+                    </div>
+
+                    <!-- Voice Status -->
+                    <div class="voice-status" id="voiceStatus" style="display: none;">
+                        <div class="voice-indicator">
+                            <div class="voice-wave"></div>
+                            <div class="voice-wave"></div>
+                            <div class="voice-wave"></div>
+                        </div>
+                        <span class="voice-text">Listening... Speak now</span>
+                        <button class="stop-voice" id="stopVoice">Stop</button>
+                    </div>
+                    
                     <button id="searchBtn" class="generate-btn">
                         <span class="btn-text">Generate Study Materials</span>
                         <i class="fas fa-magic"></i>
@@ -55,7 +118,7 @@
                         <button class="suggestion-btn" data-topic="Quadratic Equations">Quadratic Equations</button>
                         <button class="suggestion-btn" data-topic="Newton's Laws">Newton's Laws</button>
                         <button class="suggestion-btn" data-topic="Photosynthesis">Photosynthesis</button>
-                        <button class="suggestion-btn" data-topic="World War II">World War II</button>
+                        <button class="suggestion-btn" data-topic="Chemical Bonding">Chemical Bonding</button>
                     </div>
                 </div>
             </div>
@@ -142,6 +205,14 @@
                 </div>
             </div>
         </footer>
+    </div>
+
+    <!-- Notifications -->
+    <div id="notification" class="notification">
+        <div class="notification-content">
+            <i class="fas fa-info-circle"></i>
+            <span id="notificationText"></span>
+        </div>
     </div>
 
     <script src="script.js"></script>
