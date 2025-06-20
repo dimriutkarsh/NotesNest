@@ -1,6 +1,22 @@
 // NotesNest - Enhanced AI Study Assistant with Advanced Animations
 // Modern JavaScript implementation with built-in API key, theme support, and image text extraction
 
+function adjustPlaceholder() {
+  var input = document.getElementById("topicInput");
+  if (window.innerWidth <= 600) {
+    input.placeholder = "Enter your topic...";
+  } else {
+    input.placeholder = "Enter your study topic, use voice, or upload a document/image...";
+  }
+}
+
+// Run on page load
+window.addEventListener("load", adjustPlaceholder);
+
+// Run when window is resized
+window.addEventListener("resize", adjustPlaceholder);
+
+
 class StudyMateApp {
     constructor() {
         this.currentTopic = '';
