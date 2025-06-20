@@ -7,14 +7,54 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="animations.css">
     <!-- Tesseract.js for OCR functionality -->
     <script src="https://unpkg.com/tesseract.js@5.0.4/dist/tesseract.min.js"></script>
 </head>
 <body>
+    <!-- Animated Background -->
+    <div class="animated-background">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+            <div class="shape shape-5"></div>
+            <div class="shape shape-6"></div>
+        </div>
+    </div>
+
     <!-- Top Marquee -->
     <div class="marquee-top">
         <div class="marquee-content">
-            Created By Utkarsh Dimri • Powered by Advanced AI Technology • Voice Recognition Enabled • Image Processing & OCR Capable • Dark Mode Support • Real-time Study Materials • Interactive Learning
+            <span class="marquee-item">
+                <i class="fas fa-user-graduate"></i>
+                Created By Utkarsh Dimri
+            </span>
+            <span class="marquee-item">
+                <i class="fas fa-brain"></i>
+                Powered by Advanced AI Technology
+            </span>
+            <span class="marquee-item">
+                <i class="fas fa-microphone"></i>
+                Voice Recognition Enabled
+            </span>
+            <span class="marquee-item">
+                <i class="fas fa-camera"></i>
+                Image Processing & OCR Capable
+            </span>
+            <span class="marquee-item">
+                <i class="fas fa-moon"></i>
+                Dark Mode Support
+            </span>
+            <span class="marquee-item">
+                <i class="fas fa-book"></i>
+                Real-time Study Materials
+            </span>
+            <span class="marquee-item">
+                <i class="fas fa-graduation-cap"></i>
+                Interactive Learning
+            </span>
         </div>
     </div>
 
@@ -25,13 +65,34 @@
                 <div class="logo">
                     <div class="logo-circle">
                         <i class=""><img src="wellnest_logo2-removebg-preview.png" alt=""></i>
+                        <div class="logo-pulse"></div>
                     </div>
-                    <h1><span class="notes-text">Notes</span><span class="nest-text">Nest</span></h1>
+                    <h1 class="logo-title">
+                        <span class="notes-text">Notes</span>
+                        <span class="nest-text">Nest</span>
+                    </h1>
                     <button class="theme-toggle" id="themeToggle">
                         <i class="fas fa-sun" id="themeIcon"></i>
+                        <div class="toggle-ripple"></div>
                     </button>
                 </div>
                 <p class="subtitle">Your AI-powered study companion for instant learning materials with OCR support</p>
+                
+                <!-- Animated Stats -->
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="1000">0</div>
+                        <div class="stat-label">Students Helped</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="50">0</div>
+                        <div class="stat-label">Study Topics</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="99">0</div>
+                        <div class="stat-label">Accuracy %</div>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -54,11 +115,13 @@
                             <!-- Microphone Button -->
                             <button class="action-btn" id="micBtn" title="Voice Input">
                                 <i class="fas fa-microphone" id="micIcon"></i>
+                                <div class="btn-ripple"></div>
                             </button>
                             
                             <!-- File Upload Button -->
                             <button class="action-btn" id="uploadBtn" title="Upload Document/Image">
                                 <i class="fas fa-upload"></i>
+                                <div class="btn-ripple"></div>
                             </button>
                             
                             <!-- Hidden File Input -->
@@ -102,23 +165,45 @@
                             <div class="voice-wave"></div>
                             <div class="voice-wave"></div>
                             <div class="voice-wave"></div>
+                            <div class="voice-wave"></div>
+                            <div class="voice-wave"></div>
                         </div>
                         <span class="voice-text">Listening... Speak now</span>
-                        <button class="stop-voice" id="stopVoice">Stop</button>
+                        <button class="stop-voice" id="stopVoice">
+                            <i class="fas fa-stop"></i>
+                            Stop
+                        </button>
                     </div>
                     
                     <button id="searchBtn" class="generate-btn">
                         <span class="btn-text">Generate Study Materials</span>
                         <i class="fas fa-magic"></i>
+                        <div class="btn-shine"></div>
                     </button>
                 </div>
+                
                 <div class="search-suggestions">
-                    <span class="suggestion-label">Quick suggestions:</span>
+                    <span class="suggestion-label">
+                        <i class="fas fa-lightbulb"></i>
+                        Quick suggestions:
+                    </span>
                     <div class="suggestions">
-                        <button class="suggestion-btn" data-topic="Quadratic Equations">Quadratic Equations</button>
-                        <button class="suggestion-btn" data-topic="Newton's Laws">Newton's Laws</button>
-                        <button class="suggestion-btn" data-topic="Photosynthesis">Photosynthesis</button>
-                        <button class="suggestion-btn" data-topic="Chemical Bonding">Chemical Bonding</button>
+                        <button class="suggestion-btn" data-topic="Quadratic Equations">
+                            <i class="fas fa-calculator"></i>
+                            Quadratic Equations
+                        </button>
+                        <button class="suggestion-btn" data-topic="Newton's Laws">
+                            <i class="fas fa-apple-alt"></i>
+                            Newton's Laws
+                        </button>
+                        <button class="suggestion-btn" data-topic="Photosynthesis">
+                            <i class="fas fa-leaf"></i>
+                            Photosynthesis
+                        </button>
+                        <button class="suggestion-btn" data-topic="Chemical Bonding">
+                            <i class="fas fa-atom"></i>
+                            Chemical Bonding
+                        </button>
                     </div>
                 </div>
             </div>
@@ -131,14 +216,17 @@
                 <button class="tab-btn active" data-tab="notes">
                     <i class="fas fa-book-open"></i>
                     <span>Notes & Formulas</span>
+                    <div class="tab-indicator"></div>
                 </button>
                 <button class="tab-btn" data-tab="quiz">
                     <i class="fas fa-question-circle"></i>
                     <span>Interactive Quiz</span>
+                    <div class="tab-indicator"></div>
                 </button>
                 <button class="tab-btn" data-tab="report">
                     <i class="fas fa-chart-line"></i>
                     <span>Study Report</span>
+                    <div class="tab-indicator"></div>
                 </button>
             </div>
 
@@ -151,7 +239,14 @@
                         <p>Comprehensive notes with important formulas and concepts</p>
                     </div>
                     <div class="loading-state" id="notes-loading">
-                        <div class="loading-spinner"></div>
+                        <div class="loading-animation">
+                            <div class="loading-spinner"></div>
+                            <div class="loading-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
                         <p>Generating comprehensive study notes...</p>
                     </div>
                     <div id="notes-content" class="panel-content"></div>
@@ -164,7 +259,14 @@
                         <p>Test your knowledge with AI-generated questions</p>
                     </div>
                     <div class="loading-state" id="quiz-loading">
-                        <div class="loading-spinner"></div>
+                        <div class="loading-animation">
+                            <div class="loading-spinner"></div>
+                            <div class="loading-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
                         <p>Creating personalized quiz questions...</p>
                     </div>
                     <div id="quiz-content" class="panel-content"></div>
@@ -177,7 +279,14 @@
                         <p>Detailed analysis and study strategy for exam preparation</p>
                     </div>
                     <div class="loading-state" id="report-loading">
-                        <div class="loading-spinner"></div>
+                        <div class="loading-animation">
+                            <div class="loading-spinner"></div>
+                            <div class="loading-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
                         <p>Preparing detailed study report...</p>
                     </div>
                     <div id="report-content" class="panel-content"></div>
@@ -188,30 +297,56 @@
         <!-- Footer -->
         <footer class="footer">
             <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>NotesNest</span>
+                </div>
                 <p>&copy; 2024 NotesNest. Powered by AI to enhance your learning journey.</p>
                 <div class="social-links">
                     <a href="https://github.com/dimriutkarsh" class="social-link" title="GitHub">
                         <i class="fab fa-github"></i>
+                        <div class="social-ripple"></div>
                     </a>
                     <a href="https://www.instagram.com/dimri_utkarsh55/" class="social-link" title="Instagram">
                         <i class="fab fa-instagram"></i>
+                        <div class="social-ripple"></div>
                     </a>
                     <a href="https://x.com/dimri69819" class="social-link" title="Twitter">
                         <i class="fab fa-twitter"></i>
+                        <div class="social-ripple"></div>
                     </a>
                     <a href="https://www.linkedin.com/in/utkarsh-dimri-029672242/" class="social-link" title="LinkedIn">
                         <i class="fab fa-linkedin"></i>
+                        <div class="social-ripple"></div>
                     </a>
                 </div>
             </div>
         </footer>
     </div>
 
+    <!-- Scroll to Top Button -->
+    <button class="scroll-to-top" id="scrollToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
     <!-- Notifications -->
     <div id="notification" class="notification">
         <div class="notification-content">
             <i class="fas fa-info-circle"></i>
             <span id="notificationText"></span>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="pulse-loader">
+                <div class="pulse-circle"></div>
+                <div class="pulse-circle"></div>
+                <div class="pulse-circle"></div>
+            </div>
+            <h3>Initializing NotesNest...</h3>
+            <p>Preparing your AI study companion</p>
         </div>
     </div>
 
