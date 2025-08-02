@@ -27,7 +27,7 @@ class StudyMateApp {
         this.isInitialized = false;
         
         // API Configuration - Built-in API key
-        this.apiKey = 'AIzaSyANNPi-4NIf32dtFmQC1cg_HoOArebKOFg';
+        this.apiKey = 'AIzaSyBUuIZrKxMN4DnBRvE2m7lGsgAcODO5-N8';
         this.apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
         
         // DOM Elements
